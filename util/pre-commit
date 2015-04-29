@@ -1,0 +1,6 @@
+echo "Running phpdoc"
+php vendor/bin/phpdoc -t ./built/apidocs/ -d ./src/ -d ./vendor/interexperts --template="responsive-twig" -p -q
+echo "Running phpunit"
+php vendor/bin/phpunit
+echo "Running phpmd"
+php vendor/bin/phpmd src/ text phpmdruleset.xml

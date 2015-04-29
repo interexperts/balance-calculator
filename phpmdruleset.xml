@@ -20,7 +20,7 @@
 	<rule ref="./vendor/phpmd/phpmd/src/main/resources/rulesets/naming.xml/ShortVariable">
 		<priority>1</priority>
 		<properties>
-			<property name="exceptions" value="id,db,to"/>
+			<property name="exceptions" value="id,db,to,a,b"/>
 		</properties>
 	</rule>
 	<rule ref="./vendor/phpmd/phpmd/src/main/resources/rulesets/unusedcode.xml" />

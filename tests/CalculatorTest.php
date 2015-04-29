@@ -20,10 +20,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase{
 			$header = fgetcsv($fh);
 			while($testDate = fgetcsv($fh)){
 				$this->assertEquals($testDate[1], $calculator->getBalanceForDate(new \DateTime($testDate[0])), 
-					"
-					  Filename: {$filename}\r\n
-   					  TestDatum: {$testDate[0]}\r\n
-					"
+					"Calculated balance does not match expected balance.\nFilename: {$filename}\nTest date: {$testDate[0]}"
 					);
 			}
 			fclose($fh);

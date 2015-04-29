@@ -13,7 +13,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase{
 			$header = fgetcsv($fh);
 			$calculator = new Calculator();
 			while($inputYear = fgetcsv($fh)){
-				$calculator->addYear(new Year(new \DateTime($inputYear[1]), $inputYear[2], $inputYear[3]));
+				$calculator->addYear(new Year(new \DateTime($inputYear[1]), $inputYear[2], $inputYear[4], $inputYear[3], $inputYear[5]));
 			}
 			fclose($fh);
 			$fh = fopen(dirname(__FILE__). '/balance-testdata/testGetQuotum/expected-'. $filename, 'r');

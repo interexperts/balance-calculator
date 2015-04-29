@@ -7,6 +7,7 @@ use \InterExperts\BalanceCalculator\Action;
 class Calculator{
 	protected $actions = array();
 	public $years = array();
+
 	public function addYear(Year $year){
 		$this->years[] = $year;
 		$this->recalculate();
@@ -15,8 +16,8 @@ class Calculator{
 	protected function recalculate(){
 		$this->actions = array();
 		foreach($this->years as $year){
-			$this->actions[] = $this->addAction($year);
-			$this->actions[] = $this->expiresAction($year);
+			$this->addAction($year);
+			$this->expiresAction($year);
 		}
 		usort($this->actions, function($a, $b){
 			if($a->date == $b->date){
@@ -40,10 +41,12 @@ class Calculator{
 	}
 
 	protected function addAction(Year $year){
-		return new Action($year->startDate, $year->receivedQuotum, 0);
+		$this->actions[] = new Action($year->startDate, $year->quotumLegal, 0);
+		$this->actions[] = new Action($year->startDate, $year->quotumExtra, 0);
 	}
 
 	protected function expiresAction(Year $year){
-		return new Action($year->getExpirationDate(), 0, $year->receivedQuotum);
+		$this->actions[] = new Action($year->getQuotumLegalExpirationDate(), 0, $year->quotumLegal);
+		$this->actions[] = new Action($year->getQuotumExtraExpirationDate(), 0, $year->quotumExtra);
 	}
 }

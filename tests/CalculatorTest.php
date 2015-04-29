@@ -26,4 +26,8 @@ class CalculatorTest extends PHPUnit_Framework_TestCase{
 			fclose($fh);
 		}
 	}
+
+	public function testGetQuotumExtra(){
+		$this->assertTrue(true);
+	}
 }

@@ -1,0 +1,8 @@
+{
+	"name": "interexperts/BalanceCalculator",
+	"autoload": {
+		"psr-4": {
+			"InterExperts\\": "src/"
+		}
+	}
+}

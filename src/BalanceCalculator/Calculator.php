@@ -3,6 +3,8 @@ namespace InterExperts\BalanceCalculator;
 
 use \InterExperts\BalanceCalculator\Year;
 use \InterExperts\BalanceCalculator\Action;
+use \InterExperts\BalanceCalculator\UsedBalance;
+use \InterExperts\BalanceCalculator\AddBalanceAction;
 
 /**
  * Calculator for quota and balance operations
@@ -24,6 +26,15 @@ class Calculator {
 
 
 	/**
+	 * Array of used balance. Use addUsedBalance() to add new used balance
+	 * 
+	 * @see addUsedBalance()
+	 * @var array<UsedBalance> Array of UsedBalance objects
+	 */
+	public $usedBalance = array();
+
+
+	/**
 	 * Add a Year object to be used for calculations.
 	 * This method triggers recalculating quota.
 	 * 
@@ -31,6 +42,11 @@ class Calculator {
 	 */
 	public function addYear(Year $year) {
 		$this->years[] = $year;
+		$this->recalculate();
+	}
+
+	public function addUsedBalance(UsedBalance $balance) {
+		$this->usedBalance[] = $balance;
 		$this->recalculate();
 	}
 
@@ -52,6 +68,11 @@ class Calculator {
 			$this->expiresAction($year);
 		}
 
+		// Process used balance
+		foreach($this->usedBalance as $balance){
+			$this->addUsedBalanceAction($balance);
+		}
+
 		// Sort $this->actions by the date attribute:
 		usort($this->actions, function($a, $b){
 			if($a->date == $b->date){
@@ -59,6 +80,15 @@ class Calculator {
 			}
 			return ($a->date < $b->date) ? -1 : 1;
 		});
+
+		//Loop om expiresAction om te rekenen naar reeele getallen
+		foreach($this->actions as &$action){
+			if(is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')){
+				$action->calculateExpiringBalance($this->actions);
+			}
+		}
+
+		//var_dump($this->actions);
 	}
 
 
@@ -93,8 +123,18 @@ class Calculator {
 	 * @param Year $year Year object
 	 */
 	protected function addAction(Year $year){
-		$this->actions[] = new Action($year->startDate, $year->quotumLegal, 0);
-		$this->actions[] = new Action($year->startDate, $year->quotumExtra, 0);
+		$this->actions[] = new AddBalanceAction($year->startDate, $year->quotumLegal, 0);
+		$this->actions[] = new AddBalanceAction($year->startDate, $year->quotumExtra, 0);
+	}
+
+
+	/**
+	 * Add 'used balance' action to $this->actions for the given UsedBalance.
+	 *
+	 * @param UsedBalance $balance UsedBalance object
+	 */
+	protected function addUsedBalanceAction(UsedBalance $balance){
+		$this->actions[] = new UsedBalanceAction($balance->date, 0, $balance->amount);
 	}
 
 
@@ -107,7 +147,7 @@ class Calculator {
 	 * @param Year $year Year object
 	 */
 	protected function expiresAction(Year $year){
-		$this->actions[] = new Action($year->getQuotumLegalExpirationDate(), 0, $year->quotumLegal);
-		$this->actions[] = new Action($year->getQuotumExtraExpirationDate(), 0, $year->quotumExtra);
+		$this->actions[] = new ExpireAction($year->getQuotumLegalExpirationDate(), 0, $year->quotumLegal);
+		$this->actions[] = new ExpireAction($year->getQuotumExtraExpirationDate(), 0, $year->quotumExtra);
 	}
 }

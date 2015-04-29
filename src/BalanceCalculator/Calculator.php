@@ -15,7 +15,7 @@ class Calculator {
 	 * @var array<Action> Array with Action objects
 	 */
 	protected $actions = array();
-	
+
 	/**
 	 * Array of years used in calculating quota. Use addYear() to add new years
 	 * 
@@ -81,14 +81,12 @@ class Calculator {
 			return ($a->date < $b->date) ? -1 : 1;
 		});
 
-		//Loop om expiresAction om te rekenen naar reeele getallen
+		// Loop over actions, calculate expiring balance correctly:
 		foreach($this->actions as &$action){
 			if(is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')){
 				$action->calculateExpiringBalance($this->actions);
 			}
 		}
-
-		//var_dump($this->actions);
 	}
 
 
@@ -119,7 +117,7 @@ class Calculator {
 	 * Add 'add balance' action to $this->actions for the given Year.
 	 *
 	 * The balance is added on the startDate of the Year.
-	 * 
+	 *
 	 * @param Year $year Year object
 	 */
 	protected function addAction(Year $year){
@@ -143,7 +141,7 @@ class Calculator {
 	 *
 	 * The quota is deducted on the expiry date for the quotum
 	 * as determined by the Year object.
-	 * 
+	 *
 	 * @param Year $year Year object
 	 */
 	protected function expiresAction(Year $year){

@@ -18,7 +18,7 @@ class Calculator {
 
 	/**
 	 * Array of years used in calculating quota. Use addYear() to add new years
-	 * 
+	 *
 	 * @see addYear()
 	 * @var array<Year> Array of Year objects
 	 */
@@ -27,7 +27,7 @@ class Calculator {
 
 	/**
 	 * Array of used balance. Use addUsedBalance() to add new used balance
-	 * 
+	 *
 	 * @see addUsedBalance()
 	 * @var array<UsedBalance> Array of UsedBalance objects
 	 */
@@ -37,7 +37,7 @@ class Calculator {
 	/**
 	 * Add a Year object to be used for calculations.
 	 * This method triggers recalculating quota.
-	 * 
+	 *
 	 * @param Year $year
 	 */
 	public function addYear(Year $year) {

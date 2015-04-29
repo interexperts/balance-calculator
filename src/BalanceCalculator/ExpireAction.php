@@ -27,13 +27,22 @@ class ExpireAction extends Action {
 		// Iterate over the $actions array:
 		foreach($actions as &$action){
 			// Only operate on UsedBalanceAction objects which are not processed yet:
-			if (is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction') && is_null($action->processedBy)) {
+			if (is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction')
+				&& (is_null($action->processedBy) || $action->remainingBalance)) {
 				// Check whether the UsedBalanceAction is before the current ExpireAction:
 				if($action->date <= $this->date){
 					// Check whether the deduction would not result in negative balance:
-					if ($subOperation - $action->subOperation >= 0) {
-						$subOperation -= $action->subOperation;
+					$actionSubOp = $action->subOperation;
+					if ($action->remainingBalance > 0) {
+						$actionSubOp = $action->remainingBalance;
+					}
+					if ($subOperation - $actionSubOp >= 0) {
+						$subOperation -= $actionSubOp;
+						$action->remainingBalance = 0;
 						$action->processedBy = $this;
+					} else {
+						$action->remainingBalance = $actionSubOp - $subOperation;
+						$subOperation = 0;
 					}
 				}
 			}

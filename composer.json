@@ -1,13 +1,13 @@
 {
-	"name": "interexperts/BalanceCalculator",
+	"name": "interexperts/balancecalculator",
 	"autoload": {
 		"psr-4": {
 			"InterExperts\\": "src/"
 		}
 	},
-    "require-dev": {
-        "phpmd/phpmd": "@stable",
-        "phpdocumentor/phpdocumentor": "2.8.0",
-        "phpunit/phpunit": "4.5.*"
-    }
+	"require-dev": {
+		"phpmd/phpmd": "@stable",
+		"phpdocumentor/phpdocumentor": "2.8.0",
+		"phpunit/phpunit": "4.5.*"
+	}
 }

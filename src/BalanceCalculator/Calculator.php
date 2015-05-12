@@ -89,6 +89,32 @@ class Calculator {
 		}
 	}
 
+	/**
+	 * Retrieve all valid points at which balance has been added thats stil valid. 
+     * @param  \DateTime $date Date for which the balance is queried
+	 */
+	public function giveStillValidAddBalancesForDate(\DateTime $date){
+		$addActions = [];
+		foreach($this->actions as $key=>$action){
+			if($action->date <= $date){
+				if(is_a($action, '\InterExperts\BalanceCalculator\AddBalanceAction')){
+					if($action->addOperation > 0){
+						$addActions[] = $action;
+					}
+				}
+				if(is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')){
+					$addAction = array_shift($addActions);
+					$addAction->addOperation -= $action->subOperation;
+					if($addAction->addOperation > 0){
+						array_unshift($addActions, $addAction);
+					}
+				}
+			}else{
+				break;
+			}
+		}
+		return $addActions;
+	}
 
 	/**
 	 * Retrieve the actual quotum for the given $date.

@@ -95,6 +95,7 @@ class Calculator {
 	 */
 	public function giveStillValidAddBalancesForDate(\DateTime $date){
 		$addActions = [];
+		$toProcess = 0;
 		foreach($this->actions as $key=>$action){
 			if($action->date <= $date){
 				if(is_a($action, '\InterExperts\BalanceCalculator\AddBalanceAction')){
@@ -103,14 +104,25 @@ class Calculator {
 					}
 				}
 				if(is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')){
-					$addAction = array_shift($addActions);
-					$addAction->addOperation -= $action->subOperation;
-					if($addAction->addOperation > 0){
-						array_unshift($addActions, $addAction);
+					if(empty($addActions)){
+						$toProcess -= $action->subOperation;
+					}else{
+						$addAction = array_shift($addActions);
+						$addAction->addOperation -= $action->subOperation;
+						if($addAction->addOperation > 0){
+							array_unshift($addActions, $addAction);
+						}
 					}
 				}
 			}else{
 				break;
+			}
+		}
+		for($i=$toProcess; $i > 0; $i--){
+			$addAction = array_shift($addActions);
+			$addAction->addOperation -= 1;
+			if($addAction->addOperation > 0){
+				array_unshift($addActions, $addAction);
 			}
 		}
 		return $addActions;
@@ -147,8 +159,13 @@ class Calculator {
 	 * @param Year $year Year object
 	 */
 	protected function addAction(Year $year){
-		$this->actions[] = new AddBalanceAction($year->startDate, $year->quotumLegal, 0);
-		$this->actions[] = new AddBalanceAction($year->startDate, $year->quotumExtra, 0);
+		$legalAction = new AddBalanceAction($year->startDate, $year->quotumLegal, 0);
+		$legalAction->expirationDate = $year->getQuotumLegalExpirationDate();
+		$this->actions[] = $legalAction;
+
+		$extraAction = new AddBalanceAction($year->startDate, $year->quotumExtra, 0);
+		$extraAction->expirationDate = $year->getQuotumExtraExpirationDate();
+		$this->actions[] = $extraAction;
 	}
 
 

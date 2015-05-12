@@ -151,6 +151,31 @@ class Calculator {
 	}
 
 
+
+	/**
+	 * Retrieve the actual quotum for the given $date.
+	 *
+	 * This method returns the actual quotum for the given date,
+	 * including quota from previous years and including quota expiry dates.
+	 *
+	 * @param  \DateTime $date Date for which the balance is queried
+	 * @return int             Quotum
+	 */
+	public function getUnexpiredBalance(\DateTime $date, \DateTime $expireDate){
+		$currentBalance = 0;
+		foreach($this->actions as $action){
+			if($action->date <= $date){
+				if(!($action->date > $expireDate && is_a($action, '\InterExperts\BalanceCalculator\ExpireAction'))){
+					$currentBalance -= $action->subOperation;
+					$currentBalance += $action->addOperation;
+				}
+			}else{
+				break;
+			}
+		}
+		return $currentBalance;
+	}
+
 	/**
 	 * Add 'add balance' action to $this->actions for the given Year.
 	 *

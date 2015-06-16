@@ -18,34 +18,6 @@ class CalculatorTest extends PHPUnit_Framework_TestCase{
 		$this->doQuotumTest(dirname(__FILE__) . '/balance-testdata/testGetQuotumUsedDays/', true);
 	}
 
-	public function testgiveStillValidAddBalancesForDate(){
-		$directory = dirname(__FILE__) . '/balance-testdata/testGetQuotumUsedDays/';
-		$testFile = 'balance-01.csv';
-
-		$filename = basename($testFile);
-		$fh = fopen($directory . $filename, 'r');
-		$header = fgetcsv($fh);
-		$calculator = new Calculator();
-		while($inputYear = fgetcsv($fh)){
-			$calculator->addYear(new Year(new \DateTime($inputYear[1]), $inputYear[2], $inputYear[4], $inputYear[3], $inputYear[5]));
-		}
-		fclose($fh);
-
-		$fh = fopen($directory . 'used-days-'. $filename, 'r');
-		$header = fgetcsv($fh);
-		while($testDate = fgetcsv($fh)){
-			$calculator->addUsedBalance(new UsedBalance(new \DateTime($testDate[0]), $testDate[1]));
-		}
-		fclose($fh);
-
-		$fh = fopen($directory . 'expected-'. $filename, 'r');
-		$header = fgetcsv($fh);
-		while($testDate = fgetcsv($fh)){
-			$calculator->giveStillValidAddBalancesForDate(new \DateTime($testDate[0]));
-		}
-		fclose($fh);
-	}
-
 	public function testGiveQuotumAddBalanceActions(){
 		$directory = dirname(__FILE__) . '/balance-testdata/testGiveQuotumAddBalanceActions/';
 		$testFile = 'balance-01.csv';

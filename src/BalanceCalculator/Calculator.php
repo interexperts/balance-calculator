@@ -33,8 +33,13 @@ class Calculator {
 	 */
 	public $usedBalance = array();
 
-	private $isDirty = false;
-
+	/**
+	 * Flag if the calculated version is up to date
+	 *
+	 * @see recalculate()
+	 * @var boolean Flag if the calculated version is up to date
+	 */
+	protected $isDirty = false;
 
 	/**
 	 * Add a Year object to be used for calculations.
@@ -144,22 +149,56 @@ class Calculator {
 	 * @return int             Quotum
 	 */
 	public function getBalanceForDate(\DateTime $date){
+		$balanceActions = $this->getBalanceActionsForDate($date);
+		return $balanceActions['balance'];
+	}
+
+	public function getAddBalanceActionsForDate(\DateTime $date){
+		$balanceActions = $this->getBalanceActionsForDate($date);
+		$actions = array();
+		foreach($balanceActions['actions'] as $action){
+			if($action->remainingBalance <> 0){
+				$actions[] = $action;
+			}
+		}
+		return $actions;
+	}
+
+	/**
+	 * Retrieve the actual quotum and addBalanceActions for the given $date.
+	 *
+	 * This method returns the actual quotum  and addBalanceActions for the given date,
+	 * including quota from previous years and including quota expiry dates.
+	 *
+	 * @param  \DateTime $date Date for which the balance is queried
+	 * @return Array           Balance and AddBalance actions
+	 */
+	public function getBalanceActionsForDate(\DateTime $date){
 		if($this->isDirty){
 			$this->recalculate();
 		}
+		$addActions = array();
 		$currentBalance = 0;
-		foreach($this->actions as $action){
+		foreach($this->actions as &$action){
 			if($action->date <= $date){
+				if(is_a($action, '\InterExperts\BalanceCalculator\AddBalanceAction')){
+					$action->remainingBalance = $action->addOperation;
+					$addActions[] = &$action;
+				}elseif(is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')){
+					$action->originalAdd->remainingBalance -= $action->subOperation;
+					$action->originalAdd->remainingBalance += $action->addOperation;
+				}elseif(is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction')){
+					$action->processedBy->originalAdd->remainingBalance -= $action->subOperation;
+					$action->processedBy->originalAdd->remainingBalance += $action->addOperation;
+				}
 				$currentBalance -= $action->subOperation;
 				$currentBalance += $action->addOperation;
 			}else{
 				break;
 			}
 		}
-		return $currentBalance;
+		return array('balance'=>$currentBalance, 'actions'=>$addActions);
 	}
-
-
 
 	/**
 	 * Retrieve the actual quotum for the given $date.

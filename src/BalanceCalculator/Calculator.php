@@ -33,6 +33,8 @@ class Calculator {
 	 */
 	public $usedBalance = array();
 
+	private $isDirty = false;
+
 
 	/**
 	 * Add a Year object to be used for calculations.
@@ -42,12 +44,13 @@ class Calculator {
 	 */
 	public function addYear(Year $year) {
 		$this->years[] = $year;
-		$this->recalculate();
+		$this->isDirty = true;
+		
 	}
 
 	public function addUsedBalance(UsedBalance $balance) {
 		$this->usedBalance[] = $balance;
-		$this->recalculate();
+		$this->isDirty = true;
 	}
 
 
@@ -87,6 +90,7 @@ class Calculator {
 				$action->calculateExpiringBalance($this->actions);
 			}
 		}
+		$this->isDirty = false;
 	}
 
 	/**
@@ -94,6 +98,9 @@ class Calculator {
      * @param  \DateTime $date Date for which the balance is queried
 	 */
 	public function giveStillValidAddBalancesForDate(\DateTime $date){
+		if($this->isDirty){
+			$this->recalculate();
+		}
 		$addActions = [];
 		$toProcess = 0;
 		foreach ($this->actions as $action) {
@@ -138,6 +145,9 @@ class Calculator {
 	 * @return int             Quotum
 	 */
 	public function getBalanceForDate(\DateTime $date){
+		if($this->isDirty){
+			$this->recalculate();
+		}
 		$currentBalance = 0;
 		foreach($this->actions as $action){
 			if($action->date <= $date){
@@ -162,6 +172,9 @@ class Calculator {
 	 * @return int             Quotum
 	 */
 	public function getUnexpiredBalance(\DateTime $date, \DateTime $expireDate){
+		if($this->isDirty){
+			$this->recalculate();
+		}
 		$currentBalance = 0;
 		foreach($this->actions as $action){
 			if($action->date <= $date){

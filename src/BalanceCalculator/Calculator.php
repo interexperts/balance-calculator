@@ -67,8 +67,7 @@ class Calculator {
 		// Each year triggers an 'add balance' action and a 'expire balance'
 		// action. One add/expire pair for legal quotum and one pair for extra quotum.
 		foreach($this->years as $year){
-			$this->addAction($year);
-			$this->expiresAction($year);
+			$this->addDefaultActions($year);
 		}
 
 		// Process used balance
@@ -189,23 +188,17 @@ class Calculator {
 		return $currentBalance;
 	}
 
-	/**
-	 * Add 'add balance' action to $this->actions for the given Year.
-	 *
-	 * The balance is added on the startDate of the Year.
-	 *
-	 * @param Year $year Year object
-	 */
-	protected function addAction(Year $year){
+	protected function addDefaultActions(Year $year){
 		$legalAction = new AddBalanceAction($year->startDate, $year->quotumLegal, 0);
 		$legalAction->expirationDate = $year->getQuotumLegalExpirationDate();
 		$this->actions[] = $legalAction;
+		$this->actions[] = new ExpireAction($year->getQuotumLegalExpirationDate(), 0, $year->quotumLegal, $legalAction);
 
 		$extraAction = new AddBalanceAction($year->startDate, $year->quotumExtra, 0);
 		$extraAction->expirationDate = $year->getQuotumExtraExpirationDate();
 		$this->actions[] = $extraAction;
+		$this->actions[] = new ExpireAction($year->getQuotumExtraExpirationDate(), 0, $year->quotumExtra, $extraAction);
 	}
-
 
 	/**
 	 * Add 'used balance' action to $this->actions for the given UsedBalance.
@@ -214,19 +207,5 @@ class Calculator {
 	 */
 	protected function addUsedBalanceAction(UsedBalance $balance){
 		$this->actions[] = new UsedBalanceAction($balance->date, 0, $balance->amount);
-	}
-
-
-	/**
-	 * Add 'expire balance' action to $this->actions for the given Year.
-	 *
-	 * The quota is deducted on the expiry date for the quotum
-	 * as determined by the Year object.
-	 *
-	 * @param Year $year Year object
-	 */
-	protected function expiresAction(Year $year){
-		$this->actions[] = new ExpireAction($year->getQuotumLegalExpirationDate(), 0, $year->quotumLegal);
-		$this->actions[] = new ExpireAction($year->getQuotumExtraExpirationDate(), 0, $year->quotumExtra);
 	}
 }

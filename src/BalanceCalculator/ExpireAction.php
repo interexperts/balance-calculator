@@ -12,6 +12,13 @@ namespace InterExperts\BalanceCalculator;
  * the quotum expires.
  */
 class ExpireAction extends Action {
+	public $originalAdd = null;
+
+	public function __construct(\DateTime $date, $addOperation, $subOperation, &$originalAdd){
+		$this->originalAdd = $originalAdd;
+		parent::__construct($date, $addOperation, $subOperation);
+	}
+
 	/**
 	 * Calculate the balance that should not be deducted because UsedBalanceAction's
 	 * already deduct this balance.

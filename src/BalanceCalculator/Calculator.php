@@ -106,8 +106,8 @@ class Calculator {
 	 * @param  \DateTime $date Date for which the balance is queried
 	 * @return int             Quotum
 	 */
-	public function getBalanceForDate(\DateTime $date){
-		$balanceActions = $this->getBalanceActionsForDate($date);
+	public function getBalanceForDate(\DateTime $date, \DateTime $expireDate = null){
+		$balanceActions = $this->getBalanceActionsForDate($date, $expireDate);
 		return $balanceActions['balance'];
 	}
 
@@ -131,7 +131,7 @@ class Calculator {
 	 * @param  \DateTime $date Date for which the balance is queried
 	 * @return Array           Balance and AddBalance actions
 	 */
-	public function getBalanceActionsForDate(\DateTime $date){
+	public function getBalanceActionsForDate(\DateTime $date, \DateTime $expireDate = null){
 		if($this->isDirty){
 			$this->recalculate();
 		}
@@ -142,15 +142,24 @@ class Calculator {
 				if(is_a($action, '\InterExperts\BalanceCalculator\AddBalanceAction')){
 					$action->remainingBalance = $action->addOperation;
 					$addActions[] = &$action;
+					$currentBalance -= $action->subOperation;
+					$currentBalance += $action->addOperation;
 				}elseif(is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')){
-					$action->originalAdd->remainingBalance -= $action->subOperation;
-					$action->originalAdd->remainingBalance += $action->addOperation;
+					if(is_null($expireDate) || $action->date <= $expireDate){
+						$action->originalAdd->remainingBalance -= $action->subOperation;
+						$action->originalAdd->remainingBalance += $action->addOperation;
+						$currentBalance -= $action->subOperation;
+						$currentBalance += $action->addOperation;
+					}
 				}elseif(is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction')){
-					$action->processedBy->originalAdd->remainingBalance -= $action->subOperation;
-					$action->processedBy->originalAdd->remainingBalance += $action->addOperation;
+					if(!is_null($action->processedBy)){
+						$action->processedBy->originalAdd->remainingBalance -= $action->subOperation;
+						$action->processedBy->originalAdd->remainingBalance += $action->addOperation;	
+					}
+					$currentBalance -= $action->subOperation;
+					$currentBalance += $action->addOperation;
 				}
-				$currentBalance -= $action->subOperation;
-				$currentBalance += $action->addOperation;
+				
 			}else{
 				break;
 			}

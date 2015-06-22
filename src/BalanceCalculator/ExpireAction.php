@@ -31,34 +31,38 @@ class ExpireAction extends Action {
 	public function calculateExpiringBalance(&$actions){
 		$subOperation = $this->subOperation;
 
-		// Iterate over the $actions array:
-		foreach($actions as &$action){
-			// Only operate on UsedBalanceAction objects which are not processed yet:
-			if (is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction')
-				&& (is_null($action->processedBy) || empty($action->processedBy) || $action->remainingBalance)) {
-				// Check whether the UsedBalanceAction is before the current ExpireAction:
-				if($action->date <= $this->date){
-					// Check whether the deduction would not result in negative balance:
-					$actionSubOp = $action->subOperation;
-					if ($action->remainingBalance > 0) {
-						$actionSubOp = $action->remainingBalance;
-					}
-					if ($subOperation - $actionSubOp >= 0) {
-						$subOperation -= $actionSubOp;
-						$action->remainingBalance = 0;
-						$action->processedBy[] = $this;
-					} else {
-						$action->remainingBalance = $actionSubOp - $subOperation;
-						$subOperation = 0;
+		if ($subOperation > 0) {
+			// Iterate over the $actions array:
+			foreach($actions as &$action){
+				// Only operate on UsedBalanceAction objects which are not processed yet:
+				if (is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction')
+					&& (is_null($action->processedBy) || empty($action->processedBy) || $action->remainingBalance)) {
+					// Check whether the UsedBalanceAction is before the current ExpireAction:
+					if($action->date <= $this->date){
+						// Check whether the deduction would not result in negative balance:
+						$actionSubOp = $action->subOperation;
+						if ($action->remainingBalance > 0) {
+							$actionSubOp = $action->remainingBalance;
+						}
+						if ($subOperation - $actionSubOp >= 0) {
+							$subOperation -= $actionSubOp;
+							$action->remainingBalance = 0;
+							$action->processedBy[] = &$this;
+						} else {
+
+							$action->remainingBalance -= $subOperation;
+							$action->processedBy[] = &$this;
+							$subOperation = 0;
+						}
 					}
 				}
 			}
+
+			// New balance deduction value:
+			$this->subOperation = $subOperation;
 		}
 
 		// Set this object to be processed by itself:
-		$this->processedBy[] = $this;
-
-		// New balance deduction value:
-		$this->subOperation = $subOperation;
+		$this->processedBy[] = &$this;
 	}
 }

@@ -152,9 +152,10 @@ class Calculator {
 						$currentBalance += $action->addOperation;
 					}
 				}elseif(is_a($action, '\InterExperts\BalanceCalculator\UsedBalanceAction')){
-					if(!is_null($action->processedBy)){
-						$action->processedBy->originalAdd->remainingBalance -= $action->subOperation;
-						$action->processedBy->originalAdd->remainingBalance += $action->addOperation;	
+					if(!is_null($action->processedBy) && !empty($action->processedBy)){
+						foreach($action->processedBy as &$processAction)
+						$processAction->originalAdd->remainingBalance -= $action->subOperation;
+						$processAction->originalAdd->remainingBalance += $action->addOperation;	
 					}
 					$currentBalance -= $action->subOperation;
 					$currentBalance += $action->addOperation;

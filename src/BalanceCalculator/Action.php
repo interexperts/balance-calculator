@@ -10,6 +10,7 @@ class Action{
 
 	public function __construct(\DateTime $date, $addOperation, $subOperation){
 		$this->date = $date;
+		$this->processedBy = array();
 		$this->addOperation = $addOperation;
 		$this->subOperation = $subOperation;
 	}

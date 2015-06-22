@@ -41,7 +41,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase{
 		$fh = fopen($directory . 'expected-remaining-'. $filename, 'r');
 		$header = fgetcsv($fh);
 		while($testDate = fgetcsv($fh)){
-			$actions = $calculator->getAddBalanceActionsForDate(new \DateTime($testDate[0]));
+			$actions = $calculator->getAddBalanceActionsForDate(new \DateTime($testDate[0]), new \DateTime($testDate[0]));
 			$found = false;
 			foreach($actions as $action){
 				if($action->expirationDate->format('Y-m-d') == $testDate[2]){

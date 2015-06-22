@@ -111,11 +111,11 @@ class Calculator {
 		return $balanceActions['balance'];
 	}
 
-	public function getAddBalanceActionsForDate(\DateTime $date){
+	public function getAddBalanceActionsForDate(\DateTime $date, \DateTime $startDate){
 		$balanceActions = $this->getBalanceActionsForDate($date);
 		$actions = array();
 		foreach($balanceActions['actions'] as $action){
-			if($action->remainingBalance <> 0){
+			if($action->remainingBalance <> 0 && $action->expirationDate >= $startDate){
 				$actions[] = $action;
 			}
 		}

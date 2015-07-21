@@ -170,6 +170,30 @@ class Calculator {
 	}
 
 	/**
+	 * Retrieve all ExpireActions from the actions list between $startDate and $endDate
+	 * @param  \DateTime $startDate Start date
+	 * @param  \DateTime $endDate   End date
+	 * @return array Array with all expire actions
+	 */
+	public function getExpireActions(\DateTime $startDate) {
+		if($this->isDirty){
+			$this->recalculate();
+		}
+
+		$expireActions = array();
+
+		foreach ($this->actions as $action) {
+			if (is_a($action, '\InterExperts\BalanceCalculator\ExpireAction')) {
+				if ($action->date >= $startDate) {
+					$expireActions[] = $action;
+				}
+			}
+		}
+
+		return $expireActions;
+	}
+
+	/**
 	 * Retrieve the actual quotum for the given $date.
 	 *
 	 * This method returns the actual quotum for the given date,

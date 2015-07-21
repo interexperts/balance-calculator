@@ -172,7 +172,6 @@ class Calculator {
 	/**
 	 * Retrieve all ExpireActions from the actions list between $startDate and $endDate
 	 * @param  \DateTime $startDate Start date
-	 * @param  \DateTime $endDate   End date
 	 * @return array Array with all expire actions
 	 */
 	public function getExpireActions(\DateTime $startDate) {

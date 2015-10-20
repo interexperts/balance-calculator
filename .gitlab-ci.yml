@@ -1,0 +1,8 @@
+image: docker-php-git
+stages:
+  - test
+job1:
+  stage: test
+  script:
+    - composer install
+    - php ./vendor/bin/phpunit

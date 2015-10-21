@@ -1,8 +1,20 @@
-image: docker-php-git
 stages:
   - test
-job1:
+php5.5:
   stage: test
+  image: interexperts/php-5.5
   script:
-    - composer install
+    - composer install --prefer-dist
+    - php ./vendor/bin/phpunit
+php5.4:
+  stage: test
+  image: interexperts/php-5.4
+  script:
+    - composer install --prefer-dist
+    - php ./vendor/bin/phpunit
+php5.6:
+  stage: test
+  image: interexperts/php-5.6
+  script:
+    - composer install --prefer-dist
     - php ./vendor/bin/phpunit

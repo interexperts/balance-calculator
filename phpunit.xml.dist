@@ -1,6 +1,6 @@
 <phpunit 
     bootstrap="./vendor/autoload.php" 
-    colors="true"
+    colors="false"
     beStrictAboutTestsThatDoNotTestAnything="true"
     checkForUnintentionallyCoveredCode="true"
     beStrictAboutOutputDuringTests="true"
@@ -13,6 +13,7 @@
     </testsuites>
     <logging>
         <log type="coverage-html" target="built/testReport" lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-text" target="php://stdout"  showOnlySummary="true"/>
     </logging>
     <filter>
         <blacklist>

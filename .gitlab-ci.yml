@@ -6,6 +6,9 @@ php5.5:
   script:
     - composer install --prefer-dist
     - php ./vendor/bin/phpunit
+  artifacts:
+    paths:
+      - built/
 php5.4:
   stage: test
   image: interexperts/php-5.4

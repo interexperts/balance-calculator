@@ -1,5 +1,7 @@
 {
 	"name": "interexperts/balancecalculator",
+	"license": "MIT",
+	"description": "Calculator library for holiday balances",
 	"autoload": {
 		"psr-4": {
 			"InterExperts\\": "src/"

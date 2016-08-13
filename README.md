@@ -1,4 +1,4 @@
-[![Latest Stable Version](https://img.shields.io/packagist/v/interexperts/balancecalculator.svg|)](https://packagist.org/packages/interexperts/balancecalculator)
+[![Latest Stable Version](https://img.shields.io/packagist/v/interexperts/balancecalculator.svg)](https://packagist.org/packages/interexperts/balancecalculator)
 [![Total Downloads](https://img.shields.io/packagist/dt/interexperts/balancecalculator.svg)](https://packagist.org/packages/interexperts/balancecalculator)
 [![License](https://img.shields.io/packagist/l/interexperts/balancecalculator.svg)](https://packagist.org/packages/interexperts/balancecalculator)
 [![Build Status](https://travis-ci.org/interexperts/balance-calculator.svg?branch=master)](https://travis-ci.org/interexperts/balance-calculator)
